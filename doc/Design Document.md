@@ -20,7 +20,7 @@ This activity will be used as the starting point of the app. This is where users
 
 ### GamePlay ###
 
-This activity is used to actually play the game. It is here that the image will be displayed and the user can tap on the game pieces to make their move. The layout of this activity will be a gridlayout in order to easily implement an onItemClick method for the game pieces.
+This activity is used to actually play the game. It is here that the image will be displayed and the user can tap on the game pieces to make their move. The layout of this activity will be a gridview in order to easily implement an onItemClick method for the game pieces.
 
 ### YouWin ###
 
@@ -61,7 +61,7 @@ This section will give some more information on the classes that are to be imple
 As the name implies this method will set the difficulty that the game will use for the rest of the session.
 
 ### splitImage(BitMap image) ###
-This method will take the given image and split it according to the selected difficulty with the help of a BitmapFactory, and will return a GameBoard in a solved state.
+This method will take the given image and split it according to the selected difficulty with the help of a BitmapFactory, and will return a GameBoard in a solved state. The borders of the images will be shown with padding in the gridview
 
 ### scrambleBoard(GameBoard gameBoard) ###
 This mehtod will be used to scramble the board to a solvable state. This is done by making the app make an X amount of random (and non repeating) moves from a solved board state. X is yet to be determined, since this will depend on the performance and if the board is scrambled enough.
