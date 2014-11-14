@@ -40,11 +40,15 @@ This class will represent one tile of the game board. It will contain the follow
  - If it is the blank tile (boolean)
  - Its original position, aka the position it should have for a game win (int)
 
+
  ### GameBoard ###
 
  This class is used for maintaining the board state. It contains:
-  - A Map with all the board positions as keys and the Tiles as values (Map<int, Tile>)
-  - A function which checks if the game is won
+ - A Map with all the board positions as keys and the Tiles as values (Map<int, Tile>)
+ - A function which checks if the game is won
+ - Number of moves made by the user
+ - Difficulty
+ - Time spent?
 
 
 
@@ -73,3 +77,15 @@ This method is called as soon as the game is won. It will change the activity to
 
 ### onItemClick(View view) ###
 This method will call the swapTiles method with the current game board and the tapped tile.
+
+### onPause() ###
+Used to save the data as soon as the app is removed from the foreground, this saves the GameBoard in a bundle
+
+### onResume() ###
+Recreates the GameBoard from the saved bundle
+
+Mockups
+-------
+
+![mockup](https://github.com/jvriemsdijk/Npuzzle10441913/blob/master/doc/Mockups.png)
+
