@@ -79,7 +79,7 @@ This method is called as soon as the game is won. It will change the activity to
 This method will call the swapTiles method with the current game board and the tapped tile.
 
 ### onPause() ###
-Used to save the data as soon as the app is removed from the foreground, this saves the GameBoard in a bundle
+Used to save the data as soon as the app is removed from the foreground, this saves the GameBoard in a bundle, in a number of name value pairs
 
 ### onResume() ###
 Recreates the GameBoard from the saved bundle
