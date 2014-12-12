@@ -23,8 +23,178 @@ public class GameBoard implements Serializable {
     private Integer previousMove;
 
 
-    /* Getters & setters */
+    /**
+     * Method that moves the tapped block if it is a legal move. Also returns a boolean that
+     * indicating if the game is won. If the move is illegal, do nothing
+     *
+     * @param position
+     * @return boolean if game is won
+     */
+    public boolean moveBlock(int position) {
 
+        // only if the given position is within the board
+        if (position >= 0 && position < currentState.size()) {
+            int whiteBlock = difficulty * difficulty;
+            int whiteBlockPosition = currentState.indexOf(whiteBlock);
+
+            if (isLegalMove(position, whiteBlockPosition)) {
+                int clickedValue = currentState.get(position);
+                currentState.set(whiteBlockPosition, clickedValue);
+                currentState.set(position, whiteBlock);
+                moves += 1;
+                return isGameWon();
+            }
+        }
+        // if the move is illegal, do nothing
+        return false;
+    }
+
+    /**
+     * Method to determine if the given position is next to the white block position based on the
+     * known difficulty of the game. Note: this method assumes that both given positions are
+     * within the gameboard.
+     *
+     * @param position
+     * @param whiteBlockPosition
+     * @return boolean if the move is legal
+     */
+    private boolean isLegalMove(int position, int whiteBlockPosition) {
+
+        int deltaPos = abs(whiteBlockPosition - position);
+
+        if (deltaPos == this.difficulty) {
+            return true;
+        } else if (deltaPos == 1) {
+            if (position > whiteBlockPosition) {
+                return position % difficulty != 0;
+            } else {
+                return whiteBlockPosition % difficulty != 0;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * This method checks if the game is won.
+     *
+     * @return boolean if game is won
+     */
+    public boolean isGameWon() {
+
+
+        return solvedState.equals(currentState);
+
+
+//        for (Integer value : currentState) {
+//
+//            if (value != currentState.indexOf(value) + 1) {
+//
+//                return false;
+//            }
+//        }
+//        return true;
+    }
+
+
+    /**
+     * Method to start and restart the game
+     */
+    public void startGame() {
+
+        setMoves(0);
+        setCurrentState(copyList(scrambledState));
+
+    }
+
+
+    /**
+     * Method which sets up a solved game board
+     */
+    public void setupBoard() {
+        // check for image and difficulty
+        if (imageId != 0 && difficulty != 0) {
+
+            setWhiteTile(difficulty * difficulty);
+
+
+            solvedState = new ArrayList<Integer>(whiteTile);
+
+            for (int i = 0; i < (whiteTile); i++) {
+                solvedState.add(i, (i + 1));
+            }
+
+            setPreviousMove(-1);
+
+            setCurrentState(copyList(solvedState));
+            setScrambledState(copyList(solvedState));
+
+        }
+    }
+
+
+    /**
+     * Method which makes one legal move, and does not make the same move twice in a row.
+     * (it does not move a tile back and forth)
+     */
+    public void scrambleMove() {
+
+        Integer whiteTilePos;
+        List<Integer> possibleMoves;
+        Integer tileToMove;
+        int tileToMovePos;
+
+        whiteTilePos = scrambledState.indexOf(whiteTile);
+        possibleMoves = new ArrayList<Integer>();
+
+        for (int i = 0; i < whiteTile; i++) {
+            if (isLegalMove(i, whiteTilePos)) {
+                possibleMoves.add(i);
+            }
+        }
+
+        // selecteer van opties - vorige zet
+        if (possibleMoves.contains(previousMove)) {
+
+            possibleMoves.remove(previousMove);
+        }
+
+        tileToMovePos = possibleMoves.get((int) Math.floor(Math.random() * possibleMoves.size()));
+        tileToMove = scrambledState.get(tileToMovePos);
+
+        // wissel, en sla vorige zet op
+        scrambledState.set(whiteTilePos, tileToMove);
+        scrambledState.set(tileToMovePos, whiteTile);
+
+        previousMove = whiteTilePos;
+
+    }
+
+
+    /**
+     * Clears the game state so a new game can be started
+     */
+    public void quitGame() {
+        setCurrentState(null);
+        setSolvedState(null);
+        setScrambledState(null);
+        setMoves(0);
+    }
+
+
+
+    private List<Integer> copyList(List<Integer> listToCopy) {
+
+        List<Integer> copiedList = new ArrayList<Integer>(listToCopy.size());
+
+        copiedList.addAll(listToCopy);
+
+        return copiedList;
+    }
+
+
+
+     /* Getters & setters */
 
     public GameBoard() {
         this.moves = 0;
@@ -93,137 +263,5 @@ public class GameBoard implements Serializable {
     public void setPreviousMove(Integer previousMove) {
         this.previousMove = previousMove;
     }
-
-    /**
-     * Method that moves the tapped block if it is a legal move. Also returns a boolean that
-     * indicating if the game is won. If the move is illegal, do nothing
-     *
-     * @param position
-     * @return boolean if game is won
-     */
-    public boolean moveBlock(int position) {
-
-        // only if the given position is within the board
-        if (position >= 0 && position < currentState.size()) {
-            int whiteBlock = difficulty * difficulty;
-            int whiteBlockPosition = currentState.indexOf(whiteBlock);
-
-            if (isLegalMove(position, whiteBlockPosition)) {
-                int clickedValue = currentState.get(position);
-                currentState.set(whiteBlockPosition, clickedValue);
-                currentState.set(position, whiteBlock);
-                moves += 1;
-                return isGameWon();
-            }
-        }
-        // if the move is illegal, do nothing
-        return false;
-    }
-
-    /**
-     * Method to determine if the given position is next to the white block position based on the
-     * known difficulty of the game. Note: this method assumes that both given positions are
-     * within the gameboard.
-     *
-     * @param position
-     * @param whiteBlockPosition
-     * @return boolean if the move is legal
-     */
-    private boolean isLegalMove(int position, int whiteBlockPosition) {
-
-        int deltaPos = abs(whiteBlockPosition - position);
-
-        if (deltaPos == this.difficulty) {
-            return true;
-        } else if (deltaPos == 1) {
-            if (position > whiteBlockPosition) {
-                return position % difficulty != 0;
-            } else {
-                return whiteBlockPosition % difficulty != 0;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * This method checks if the game is won.
-     *
-     * @return boolean if game is won
-     */
-    public boolean isGameWon() {
-        for (Integer value : currentState) {
-
-            if (value != currentState.indexOf(value) + 1) {
-
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-
-    public void startGame() {
-
-        setCurrentState(scrambledState);
-
-    }
-
-    public void setupBoard() {
-        // check for image and difficulty
-        if (imageId != 0 && difficulty != 0) {
-
-            setWhiteTile(difficulty * difficulty);
-
-
-            solvedState = new ArrayList<Integer>(whiteTile);
-
-            for (int i = 0; i < (whiteTile); i++) {
-                solvedState.add(i, (i + 1));
-            }
-
-            setPreviousMove(-1);
-
-            setCurrentState(solvedState);
-            setScrambledState(solvedState);
-
-        }
-    }
-
-
-    public void scrambleMove() {
-
-        Integer whiteTilePos;
-        List<Integer> possibleMoves;
-        Integer tileToMove;
-        int tileToMovePos;
-
-        whiteTilePos = scrambledState.indexOf(whiteTile);
-        possibleMoves = new ArrayList<Integer>();
-
-        for (int i = 0; i < whiteTile; i++) {
-            if (isLegalMove(i, whiteTilePos)) {
-                possibleMoves.add(i);
-            }
-        }
-
-        // selecteer van opties - vorige zet
-        if (possibleMoves.contains(previousMove)) {
-
-            possibleMoves.remove(previousMove);
-        }
-
-        tileToMovePos = possibleMoves.get((int) Math.floor(Math.random() * possibleMoves.size()));
-        tileToMove = scrambledState.get(tileToMovePos);
-
-        // wissel, en sla vorige zet op
-        scrambledState.set(whiteTilePos, tileToMove);
-        scrambledState.set(tileToMovePos, whiteTile);
-
-        previousMove = whiteTilePos;
-
-    }
-
 
 }
