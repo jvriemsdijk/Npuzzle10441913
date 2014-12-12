@@ -3,6 +3,7 @@ package nl.mprog.setup.npuzzle10441913;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,9 +15,12 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import nl.mprog.setup.npuzzle10441913.adapters.ImageSelectionAdapter;
 import nl.mprog.setup.npuzzle10441913.model.GameBoard;
 import nl.mprog.setup.npuzzle10441913.util.Constants;
 
@@ -32,17 +36,24 @@ public class ImageSelection extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         setContentView(R.layout.image_selection);
 
+        // TODO : check for previous game from shared prefs and load it
         setGameBoard(new GameBoard());
-
-        // TODO : check for previous game and load it
 
 
         // set the layout
         GridView gridView = (GridView) this.findViewById(R.id.imageGrid);
         gridView.setNumColumns(2);
-        gridView.setAdapter(new ImageAdapter(this));
+        gridView.setAdapter(new ImageSelectionAdapter(this));
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -54,8 +65,23 @@ public class ImageSelection extends Activity {
                 goToDifficultySelection();
             }
         });
+
     }
 
+
+    @Override
+    protected void onPause() {
+
+        SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        Gson gson = new Gson();
+        String json = gson.toJson(gameBoard);
+        editor.putString("gameboard", json);
+        editor.commit();
+
+        super.onPause();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -78,62 +104,8 @@ public class ImageSelection extends Activity {
 
 
     /**
-     * Custom image adapter for the gridview. Scans the drawable dir for up to 10 images with the
-     * naming: 'npuzzleX' where X is a number (single digit).
+     * Switches to the difficulty selection view, and adds the listeners for the selectors
      */
-    public class ImageAdapter extends BaseAdapter {
-
-        private Context context;
-        private List<Integer> iconIdList;
-        private int iconSize;
-
-
-        public ImageAdapter(Context c) {
-            context = c;
-            iconSize = context.getResources().getDisplayMetrics().widthPixels / 3;
-            iconIdList = new ArrayList<Integer>();
-
-            // as per the requirements we anticipate up to 10 images
-            for (int i = 0; i < 10; i++) {
-
-                int imageId = context.getResources().getIdentifier("npuzzle" + i, "drawable", "nl.mprog.setup.npuzzle10441913");
-                // if there are less than 10 images we will get 0
-                if (imageId == 0) {
-                    break;
-                } else {
-                    iconIdList.add(imageId);
-                }
-            }
-        }
-
-        public int getCount() {
-
-            return iconIdList.size();
-        }
-
-        public Object getItem(int position) {
-            return iconIdList.get(position);
-        }
-
-        public long getItemId(int position) {
-            return (long) iconIdList.get(position);
-        }
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ImageView imageView;
-            if (convertView == null) {
-                imageView = new ImageView(context);
-                imageView.setLayoutParams(new GridView.LayoutParams(iconSize, iconSize));
-                imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            } else {
-                imageView = (ImageView) convertView;
-            }
-            imageView.setImageResource(iconIdList.get(position));
-            return imageView;
-        }
-
-    }
-
     public void goToDifficultySelection() {
         setContentView(R.layout.difficulty_selection);
         addDifficultyListeners();
@@ -180,15 +152,20 @@ public class ImageSelection extends Activity {
     }
 
 
+    /**
+     * Method to start the game
+     */
     public void goToGame() {
+
         Intent intent = new Intent(this, GameView.class);
+//        intent.putExtra("gameBoard", gameBoard);
         startActivity(intent);
     }
 
-    // TODO : passing gameboard to game view
 
 
-//    ------------------ Getters & Setters -------------------
+
+/* ------------------ Getters & Setters ------------------- */
 
     public GameBoard getGameBoard() {
         return gameBoard;
