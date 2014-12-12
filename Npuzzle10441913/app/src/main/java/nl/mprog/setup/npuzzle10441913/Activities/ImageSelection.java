@@ -73,6 +73,10 @@ public class ImageSelection extends Activity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        // to prevent the game from returning to the game won overview
+    }
 
     @Override
     protected void onPause() {
@@ -96,8 +100,6 @@ public class ImageSelection extends Activity {
         Intent intent = new Intent(this, GameView.class);
         startActivity(intent);
     }
-
-
 
 
 /* ------------------ Getters & Setters ------------------- */

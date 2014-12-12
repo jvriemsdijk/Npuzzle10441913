@@ -40,7 +40,7 @@ public class GameView extends Activity {
         SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         String json = sharedPreferences.getString("gameboard", "");
         Gson gson = new Gson();
-        gameBoard = gson.fromJson(json, GameBoard.class);
+        setGameBoard(gson.fromJson(json, GameBoard.class));
 
         // check to see if the game has been started yet
         if (gameBoard.getCurrentState() == null) {
@@ -48,10 +48,9 @@ public class GameView extends Activity {
             startGame();
         }
 
-
         GridView gridview = (GridView) findViewById(R.id.gameGridView);
         gridview.setNumColumns(gameBoard.getDifficulty());
-        imageTileAdapter = new ImageTileAdapter(this, gameBoard);
+        setImageTileAdapter(new ImageTileAdapter(this, gameBoard));
         gridview.setAdapter(imageTileAdapter);
 
 
@@ -65,7 +64,6 @@ public class GameView extends Activity {
                 }
             }
         });
-
 
     }
 
@@ -121,38 +119,47 @@ public class GameView extends Activity {
     }
 
 
+    /**
+     * Method which changes the difficulty of the game.
+     *
+     * @param difficulty
+     */
     private void changeDifficulty(int difficulty) {
+
+        // quit the current game and setup a new game
         gameBoard.quitGame();
         gameBoard.setDifficulty(difficulty);
         gameBoard.setupBoard();
-        imageTileAdapter = new ImageTileAdapter(getApplicationContext(), gameBoard);
+
+        // set the layout to fit the new difficulty
+        setImageTileAdapter(new ImageTileAdapter(getApplicationContext(), gameBoard));
         GridView gridview = (GridView) findViewById(R.id.gameGridView);
         gridview.setNumColumns(difficulty);
         gridview.setAdapter(imageTileAdapter);
+
         startGame();
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.game_view, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
         if (id == R.id.restart) {
             gameBoard.startGame();
             updateGrid();
             return true;
-        }else if (id == R.id.reshuffle) {
-
+        } else if (id == R.id.reshuffle) {
+            gameBoard.quitGame();
+            gameBoard.setupBoard();
+            updateGrid();
             startGame();
             return true;
         } else if (id == R.id.imageSelect) {
@@ -181,6 +188,7 @@ public class GameView extends Activity {
     private void goToGameWon() {
         Intent intent = new Intent(this, GameWon.class);
         startActivity(intent);
+        finish();
     }
 
     private void goToImageSelection() {
@@ -189,4 +197,23 @@ public class GameView extends Activity {
 
     }
 
+
+    /* ------------------ Getters & Setters ------------------- */
+
+
+    public GameBoard getGameBoard() {
+        return gameBoard;
+    }
+
+    public void setGameBoard(GameBoard gameBoard) {
+        this.gameBoard = gameBoard;
+    }
+
+    public ImageTileAdapter getImageTileAdapter() {
+        return imageTileAdapter;
+    }
+
+    public void setImageTileAdapter(ImageTileAdapter imageTileAdapter) {
+        this.imageTileAdapter = imageTileAdapter;
+    }
 }

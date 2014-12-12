@@ -81,19 +81,7 @@ public class GameBoard implements Serializable {
      * @return boolean if game is won
      */
     public boolean isGameWon() {
-
-
         return solvedState.equals(currentState);
-
-
-//        for (Integer value : currentState) {
-//
-//            if (value != currentState.indexOf(value) + 1) {
-//
-//                return false;
-//            }
-//        }
-//        return true;
     }
 
 
@@ -182,7 +170,6 @@ public class GameBoard implements Serializable {
     }
 
 
-
     private List<Integer> copyList(List<Integer> listToCopy) {
 
         List<Integer> copiedList = new ArrayList<Integer>(listToCopy.size());
@@ -194,7 +181,7 @@ public class GameBoard implements Serializable {
 
 
 
-     /* Getters & setters */
+     /*-------------------- Getters & setters ------------------------*/
 
     public GameBoard() {
         this.moves = 0;

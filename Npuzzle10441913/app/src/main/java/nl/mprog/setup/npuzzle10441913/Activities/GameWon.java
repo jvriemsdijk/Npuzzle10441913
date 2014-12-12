@@ -6,12 +6,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
 import nl.mprog.setup.npuzzle10441913.R;
 import nl.mprog.setup.npuzzle10441913.model.GameBoard;
+import nl.mprog.setup.npuzzle10441913.util.BitmapUtil;
 
 
 public class GameWon extends ActionBarActivity {
@@ -38,6 +40,7 @@ public class GameWon extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
 
+        // getting the gameboard
         SharedPreferences sharedPreferences = getSharedPreferences(getPackageName(), MODE_PRIVATE);
         String json = sharedPreferences.getString("gameboard", "");
         Gson gson = new Gson();
@@ -46,12 +49,17 @@ public class GameWon extends ActionBarActivity {
 
         TextView textView = (TextView) findViewById(R.id.gameWonText);
         textView.setText("You have won the game in " + gameBoard.getMoves() + " moves!");
+
+        ImageView imageView = (ImageView) findViewById(R.id.gameWonImage);
+        int width =  this.getResources().getDisplayMetrics().widthPixels;
+        int height = this.getResources().getDisplayMetrics().heightPixels - 100;
+        imageView.setImageBitmap(BitmapUtil.decodeSampledBitmapFromResource(this.getResources(), (int) gameBoard.getImageId(), width, height));
     }
 
 
     @Override
     public void onBackPressed() {
-//        super.onBackPressed();
+        // the game has been won, thus there is no need to return to the game view
     }
 
     /**
@@ -65,8 +73,12 @@ public class GameWon extends ActionBarActivity {
         // return to the image menu
         Intent intent = new Intent(this, ImageSelection.class);
         startActivity(intent);
+
+        finish();
     }
 
+
+    /* ------------------ Getters & Setters ------------------- */
 
     public GameBoard getGameBoard() {
         return gameBoard;
