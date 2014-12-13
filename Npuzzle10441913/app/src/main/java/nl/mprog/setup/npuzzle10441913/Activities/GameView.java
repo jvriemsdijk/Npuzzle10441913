@@ -88,7 +88,7 @@ public class GameView extends Activity {
      */
     private void startGame() {
 
-        new CountDownTimer(3000, 1000) {
+        new CountDownTimer(3000, 10) {
 
             public void onTick(long millisUntilFinished) {
                 // make one move to scramble the board
